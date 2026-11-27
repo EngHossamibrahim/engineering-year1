@@ -21,7 +21,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p site
-          cp 3-index.html site/index.html
+          cp "$(ls -1 *index.html | sort -V | tail -n1)" site/index.html
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
