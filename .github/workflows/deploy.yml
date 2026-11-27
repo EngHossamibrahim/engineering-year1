@@ -25,7 +25,38 @@ jobs:
           mkdir -p site
           f=$(for x in *index.html; do echo "$(git log -1 --format=%ct -- "$x") $x"; done | sort -n | tail -n1 | cut -d" " -f2)
           echo "using $f"
-          cp "$f" site/index.html
+          h=$(sha256sum "$f" | cut -c1-12)
+          cp "$f" "site/app-$h.html"
+          echo "{\"file\":\"app-$h.html\"}" > site/version.json
+          cat > site/index.html <<'LOADER'
+          <!doctype html>
+          <html lang="ar" dir="rtl">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+          <meta http-equiv="Pragma" content="no-cache">
+          <meta http-equiv="Expires" content="0">
+          <title>Freshman 26</title>
+          <style>html,body{margin:0;background:#14161a;color:#fff;font-family:sans-serif}#m{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;opacity:.7}</style>
+          </head>
+          <body>
+          <div id="m">...</div>
+          <script>
+          (function () {
+            var base = location.pathname.replace(/[^\/]*$/, '');
+            function fail() { document.getElementById('m').innerHTML = '<a style="color:#fff" href="' + location.pathname + '?r=' + Date.now() + location.hash + '">Reload</a>'; }
+            fetch(base + 'version.json?t=' + Date.now(), { cache: 'no-store' })
+              .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+              .then(function (v) { return fetch(base + v.file); })
+              .then(function (r) { if (!r.ok) throw 0; return r.text(); })
+              .then(function (html) { document.open(); document.write(html); document.close(); })
+              .catch(fail);
+          })();
+          </script>
+          </body>
+          </html>
+          LOADER
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
