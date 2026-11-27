@@ -18,10 +18,14 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Prepare site
         run: |
           mkdir -p site
-          cp "$(ls -1 *index.html | sort -V | tail -n1)" site/index.html
+          f=$(for x in *index.html; do echo "$(git log -1 --format=%ct -- "$x") $x"; done | sort -n | tail -n1 | cut -d" " -f2)
+          echo "using $f"
+          cp "$f" site/index.html
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
