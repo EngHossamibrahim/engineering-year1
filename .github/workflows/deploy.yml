@@ -58,9 +58,7 @@ jobs:
           </html>
           LOADER
           touch site/.nojekyll
-          if [ -f lab-preview/1-index.html ]; then mkdir -p site/lab-preview && cp lab-preview/1-index.html site/lab-preview/index.html; fi
+          if ls lab-preview/*index.html >/dev/null 2>&1; then lp=$(for x in lab-preview/*index.html; do echo "$(git log -1 --format=%ct -- "$x") $x"; done | sort -n | tail -n1 | cut -d" " -f2); mkdir -p site/lab-preview; cp "$lp" site/lab-preview/index.html; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
-      - id: deployment
-        uses: actions/deploy-pages@v4
