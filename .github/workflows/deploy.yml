@@ -58,7 +58,7 @@ jobs:
           </html>
           LOADER
           touch site/.nojekyll
-          if [ -f lab-preview/1-p9-index.html ]; then mkdir -p site/lab-preview && cp lab-preview/1-p9-index.html site/lab-preview/index.html; fi
+          if [ -f lab-preview/2-p9-index.html ]; then mkdir -p site/lab-preview && cp lab-preview/2-p9-index.html site/lab-preview/index.html; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
